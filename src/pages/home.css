@@ -1,0 +1,26 @@
+.home-container {
+    text-align: center;
+    padding: 20px;
+    background-color: #f8f9fa; /* Couleur de fond légère */
+  }
+  
+  .date-time {
+    margin: 20px;
+  }
+  
+  .date {
+    font-size: 1.5em; 
+    color: #b363e1; 
+    margin-bottom: 10px; 
+  }
+  
+  .time {
+    font-size: 2.5em; 
+    color: #010109; 
+    font-weight: bold;
+    border: 2px solid #c0a1cc; 
+    padding: 10px;
+    border-radius: 8px; 
+    background-color: #e9f5e9; 
+  }
+  
