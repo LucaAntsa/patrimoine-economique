@@ -7,7 +7,7 @@ import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
-const API_URL = 'http://localhost:5000'; // Vérifiez que cela correspond à votre backend
+const API_URL = 'http://localhost:5000'; 
 
 const Patrimoine = () => {
   const [possessions, setPossessions] = useState([]);
@@ -47,7 +47,7 @@ const Patrimoine = () => {
       let currentValue = p.valeur;
 
       while (currentDate <= endDate) {
-        labels.push(currentDate.toISOString().split('T')[0]); // Formatage simplifié pour les labels
+        labels.push(currentDate.toISOString().split('T')[0]); 
         const monthsElapsed = Math.floor((currentDate - startDate) / (1000 * 60 * 60 * 24 * 30));
         const amortizedValue = currentValue * Math.pow(1 - amortRate, monthsElapsed);
         values.push(amortizedValue);

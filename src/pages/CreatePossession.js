@@ -24,7 +24,7 @@ const CreatePossession = () => {
       });
 
       if (response.status === 201) {
-        navigate('/possessions'); // Redirect to the list of possessions
+        navigate('/possessions'); 
       }
     } catch (error) {
       setError('An error occurred while creating the possession.');

@@ -34,12 +34,12 @@ const UpdatePossession = () => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent page reload on form submission
+    e.preventDefault(); 
 
     axios.put(`http://localhost:5000/api/possessions/${libelle}`, possession)
       .then(response => {
         alert('Possession mise à jour avec succès');
-        navigate('/possessions'); // Redirige vers la liste des possessions après la mise à jour
+        navigate('/possessions'); // Redirection vers la liste des possessions après la mise à jour
       })
       .catch(error => {
         setError('Erreur lors de la mise à jour de la possession.');

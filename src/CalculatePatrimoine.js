@@ -41,7 +41,6 @@ const PossessionsTable = ({ possessions }) => {
                             <td>{new Date(possession.dateDebut).toLocaleDateString()}</td>
                             <td>{possession.dateFin ? new Date(possession.dateFin).toLocaleDateString() : 'N/A'}</td>
                             <td>{possession.tauxAmortissement ? `${possession.tauxAmortissement}%` : 'N/A'}</td>
-                            <td>{/* Logique pour calculer la valeur actuelle si nécessaire */}</td>
                         </tr>
                     ))}
                 </tbody>
