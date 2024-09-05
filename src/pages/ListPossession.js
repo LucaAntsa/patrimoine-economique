@@ -50,18 +50,22 @@ const ListPossession = () => {
           {possessions.map((possession) => (
             <tr key={possession.libelle}>
               <td>{possession.libelle}</td>
-              <td>{possession.valeur}</td>
+              <td>{possession.valeur || 'Non défini'}</td>
               <td>{new Date(possession.dateDebut).toLocaleDateString()}</td>
               <td>{possession.dateFin ? new Date(possession.dateFin).toLocaleDateString() : 'En cours'}</td>
-              <td>{possession.tauxAmortissement}%</td>
-              <td>{(possession.valeur * (1 + possession.tauxAmortissement / 100)).toFixed(2)}</td>
+              <td>{possession.taux ? possession.taux + '%' : 'Non défini'}</td>
+              <td>
+                {possession.valeur && possession.taux
+                  ? (possession.valeur * (1 + possession.taux / 100)).toFixed(2)
+                  : 'Valeur actuelle indisponible'}
+              </td>
               <td>{possession.possesseur ? possession.possesseur.nom : 'Non défini'}</td>
               <td>
                 <Link className="btn btn-warning" to={`/possession/${possession.libelle}/update`}>Éditer</Link>
                 <button
                   className="btn btn-danger ms-2"
                   onClick={() => handleClose(possession.libelle)}
-                  disabled={possession.dateFin} 
+                  disabled={possession.dateFin}
                 >
                   Clôturer
                 </button>
