@@ -21,7 +21,7 @@ function App() {
         return response.json();
       })
       .then(data => {
-        setPossessions(data); // Assurez-vous que les possessions sont directement disponibles
+        setPossessions(data); 
       })
       .catch(error => console.error('Erreur lors du chargement des données des possessions:', error));
   }, []);
@@ -33,7 +33,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/patrimoine" element={<Patrimoine possessions={possessions} />} />
-          <Route path="/possession" element={<ListPossession />} /> {/* Pas besoin de props si la récupération se fait dans ListPossession */}
+          <Route path="/possession" element={<ListPossession />} /> 
           <Route path="/possession/create" element={<CreatePossession />} />
           <Route path="/possession/:libelle/update" element={<UpdatePossession possessions={possessions} />} />
           <Route path="/patrimoine/possessions-table" element={<PossessionsTable possessions={possessions} />} />

@@ -8,7 +8,7 @@ const CreatePossession = () => {
   const [dateDebut, setDateDebut] = useState('');
   const [dateFin, setDateFin] = useState('');
   const [taux, setTaux] = useState('');
-  const [possesseur, setPossesseur] = useState(''); // Nouveau champ pour le possesseur
+  const [possesseur, setPossesseur] = useState(''); 
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -22,7 +22,7 @@ const CreatePossession = () => {
         dateDebut,
         dateFin,
         taux,
-        possesseur, // Ajout du possesseur
+        possesseur, 
       });
 
       if (response.status === 201) {
