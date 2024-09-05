@@ -21,26 +21,22 @@ function App() {
         return response.json();
       })
       .then(data => {
-        setPossessions(data || []);
+        setPossessions(data); // Assurez-vous que les possessions sont directement disponibles
       })
       .catch(error => console.error('Erreur lors du chargement des données des possessions:', error));
   }, []);
   
-
   return (
     <Router>
       <Header />
       <div className="container mt-4">
         <Routes>
-          <Route path="/" element={<Home />} /> {/* Route par défaut pour afficher la date */}
+          <Route path="/" element={<Home />} />
           <Route path="/patrimoine" element={<Patrimoine possessions={possessions} />} />
-          <Route path="/possession" element={<ListPossession possessions={possessions} />} />
+          <Route path="/possession" element={<ListPossession />} /> {/* Pas besoin de props si la récupération se fait dans ListPossession */}
           <Route path="/possession/create" element={<CreatePossession />} />
           <Route path="/possession/:libelle/update" element={<UpdatePossession possessions={possessions} />} />
-          <Route 
-            path="/patrimoine/possessions-table" 
-            element={<PossessionsTable possessions={possessions} />} 
-          />
+          <Route path="/patrimoine/possessions-table" element={<PossessionsTable possessions={possessions} />} />
         </Routes>
       </div>
     </Router>

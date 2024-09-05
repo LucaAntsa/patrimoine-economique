@@ -1,17 +1,21 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Form } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
 import axios from 'axios';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
-const API_URL = 'http://localhost:5000'; 
+const API_URL = 'http://localhost:5000';
 
 const Patrimoine = () => {
   const [possessions, setPossessions] = useState([]);
   const [total, setTotal] = useState(0);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [specificDate, setSpecificDate] = useState('');
+  const [filteredPossessions, setFilteredPossessions] = useState([]);
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [
@@ -29,29 +33,31 @@ const Patrimoine = () => {
       .then(response => {
         const data = response.data;
         setPossessions(data);
-        generateGraphData(data);
+        generateGraphData(data, new Date(0), new Date());
+        setFilteredPossessions(data);
       })
       .catch(error => console.error('Erreur de récupération des possessions:', error));
   }, []);
 
-  const generateGraphData = (data) => {
+  const generateGraphData = (data, start, end) => {
     const labels = [];
     const values = [];
 
     data.forEach((p) => {
-      const startDate = new Date(p.dateDebut);
-      const endDate = p.dateFin ? new Date(p.dateFin) : new Date();
-      const amortRate = p.taux / 100;
+      const possessionStartDate = new Date(p.dateDebut);
+      const possessionEndDate = p.dateFin ? new Date(p.dateFin) : new Date();
+      const amortRate = p.taux ? p.taux / 100 : 0;
 
-      let currentDate = new Date(startDate);
+      let currentDate = new Date(possessionStartDate);
       let currentValue = p.valeur;
 
-      while (currentDate <= endDate) {
-        labels.push(currentDate.toISOString().split('T')[0]); 
-        const monthsElapsed = Math.floor((currentDate - startDate) / (1000 * 60 * 60 * 24 * 30));
-        const amortizedValue = currentValue * Math.pow(1 - amortRate, monthsElapsed);
-        values.push(amortizedValue);
-
+      while (currentDate <= possessionEndDate) {
+        if (currentDate >= start && currentDate <= end) {
+          labels.push(currentDate.toISOString().split('T')[0]);
+          const monthsElapsed = Math.floor((currentDate - possessionStartDate) / (1000 * 60 * 60 * 24 * 30));
+          const amortizedValue = currentValue * Math.pow(1 - amortRate, monthsElapsed);
+          values.push(amortizedValue);
+        }
         currentDate.setMonth(currentDate.getMonth() + 1);
       }
     });
@@ -69,20 +75,89 @@ const Patrimoine = () => {
     });
   };
 
+  const handleFilterByDateRange = () => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      const filtered = possessions.filter((p) => {
+        const possessionStartDate = new Date(p.dateDebut);
+        const possessionEndDate = p.dateFin ? new Date(p.dateFin) : new Date();
+        return (possessionStartDate <= end && possessionEndDate >= start);
+      });
+
+      setFilteredPossessions(filtered);
+      generateGraphData(filtered, start, end);
+    }
+  };
+
   const calculateTotal = () => {
-    const total = possessions.reduce((sum, p) => sum + parseFloat(p.valeur), 0);
-    setTotal(total);
+    if (specificDate) {
+      const date = new Date(specificDate);
+      const totalAtDate = possessions.reduce((sum, p) => {
+        const possessionStartDate = new Date(p.dateDebut);
+        const possessionEndDate = p.dateFin ? new Date(p.dateFin) : new Date();
+        if (date >= possessionStartDate && date <= possessionEndDate) {
+          const monthsElapsed = Math.floor((date - possessionStartDate) / (1000 * 60 * 60 * 24 * 30));
+          const amortRate = p.taux ? p.taux / 100 : 0;
+          const amortizedValue = p.valeur * Math.pow(1 - amortRate, monthsElapsed);
+          return sum + amortizedValue;
+        }
+        return sum;
+      }, 0);
+      setTotal(totalAtDate);
+    } else {
+      setTotal(0);
+    }
   };
 
   return (
     <div className="container mt-4">
       <h1 className="mb-4">Patrimoine</h1>
-      <Button variant="primary" onClick={calculateTotal}>
-        Calculer le Total
-      </Button>
+
+      {/* Formulaire pour sélectionner une plage de dates */}
+      <Form className="mb-3">
+        <Form.Group controlId="startDate">
+          <Form.Label>Date de début</Form.Label>
+          <Form.Control 
+            type="date" 
+            value={startDate} 
+            onChange={(e) => setStartDate(e.target.value)} 
+          />
+        </Form.Group>
+        <Form.Group controlId="endDate" className="mt-2">
+          <Form.Label>Date de fin</Form.Label>
+          <Form.Control 
+            type="date" 
+            value={endDate} 
+            onChange={(e) => setEndDate(e.target.value)} 
+          />
+        </Form.Group>
+        <Button variant="primary" className="mt-3" onClick={handleFilterByDateRange}>
+          Afficher le Graphique pour Intervalle de Date
+        </Button>
+      </Form>
+
+      {/* Formulaire pour sélectionner une date spécifique */}
+      <Form className="mb-3">
+        <Form.Group controlId="specificDate">
+          <Form.Label>Date Spécifique</Form.Label>
+          <Form.Control 
+            type="date" 
+            value={specificDate} 
+            onChange={(e) => setSpecificDate(e.target.value)} 
+          />
+        </Form.Group>
+        <Button variant="success" className="mt-3" onClick={calculateTotal}>
+          Calculer la Valeur Totale du Patrimoine
+        </Button>
+      </Form>
+
+      {/* Afficher le total */}
       <div className="total-display mt-3">
-        <h4>Total des Patrimoines: {total.toFixed(2)} Ar</h4>
+        <h4>Total des Patrimoines à la Date Sélectionnée: {total.toFixed(2)} Ar</h4>
       </div>
+
       <Table striped bordered hover className="mt-3">
         <thead>
           <tr>
@@ -94,7 +169,7 @@ const Patrimoine = () => {
           </tr>
         </thead>
         <tbody>
-          {possessions.map((p) => (
+          {filteredPossessions.map((p) => (
             <tr key={p.libelle}>
               <td>{p.libelle}</td>
               <td>{p.valeur}</td>
@@ -105,6 +180,7 @@ const Patrimoine = () => {
           ))}
         </tbody>
       </Table>
+
       <div className="mt-4">
         <h3>Graphique de Valeur Patrimoine</h3>
         <div style={{ position: 'relative', height: '400px', width: '100%' }}>

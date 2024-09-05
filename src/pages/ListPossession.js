@@ -22,8 +22,7 @@ const ListPossession = () => {
   const handleClose = async (libelle) => {
     try {
       await axios.put(`http://localhost:5000/api/possessions/${libelle}/close`);
-      // Mettre à jour l'état local pour supprimer la possession clôturée
-      setPossessions(possessions.filter(p => p.libelle !== libelle));
+      setPossessions(prevPossessions => prevPossessions.filter(p => p.libelle !== libelle));
     } catch (error) {
       setError('Une erreur est survenue lors de la clôture de la possession.');
     }
@@ -43,6 +42,7 @@ const ListPossession = () => {
             <th>Date Fin</th>
             <th>Taux</th>
             <th>Valeur Actuelle</th>
+            <th>Possesseur</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -51,16 +51,17 @@ const ListPossession = () => {
             <tr key={possession.libelle}>
               <td>{possession.libelle}</td>
               <td>{possession.valeur}</td>
-              <td>{possession.dateDebut}</td>
-              <td>{possession.dateFin || 'En cours'}</td>
-              <td>{possession.taux}%</td>
-              <td>{(possession.valeur * (1 + possession.taux / 100)).toFixed(2)}</td>
+              <td>{new Date(possession.dateDebut).toLocaleDateString()}</td>
+              <td>{possession.dateFin ? new Date(possession.dateFin).toLocaleDateString() : 'En cours'}</td>
+              <td>{possession.tauxAmortissement}%</td>
+              <td>{(possession.valeur * (1 + possession.tauxAmortissement / 100)).toFixed(2)}</td>
+              <td>{possession.possesseur ? possession.possesseur.nom : 'Non défini'}</td>
               <td>
                 <Link className="btn btn-warning" to={`/possession/${possession.libelle}/update`}>Éditer</Link>
-                <button 
+                <button
                   className="btn btn-danger ms-2"
                   onClick={() => handleClose(possession.libelle)}
-                  disabled={possession.dateFin} // Désactiver si déjà clôturé
+                  disabled={possession.dateFin} 
                 >
                   Clôturer
                 </button>

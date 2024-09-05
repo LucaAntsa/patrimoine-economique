@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const app = express();
 
@@ -27,73 +28,94 @@ const __dirname = path.dirname(__filename);
 // Servir le dossier "data" statiquement
 app.use('/data', express.static(path.join(__dirname, 'data')));
 
-// Données simulées
-let possessions = [
-  { libelle: "MacBook Pro", valeur: 4000000, dateDebut: "2023-12-25T00:00:00.000Z", dateFin: null, taux: 5 },
-  { libelle: "Alternance", valeur: 500000, dateDebut: "2022-12-31T21:00:00.000Z", dateFin: null, taux: null, jour: 1, valeurConstante: 500000 },
-  { libelle: "Survie", valeur: -300000, dateDebut: "2022-12-31T21:00:00.000Z", dateFin: null, taux: null, jour: 2, valeurConstante: -300000 }
-];
+// Fonction pour lire les données du fichier JSON
+const readDataFile = () => {
+  const filePath = path.join(__dirname, 'data', 'data.json');
+  const data = fs.readFileSync(filePath, 'utf8');
+  return JSON.parse(data);
+};
+
+// Charger les données depuis le fichier JSON
+let data = readDataFile();
 
 // Endpoint: Get Possession list
 app.get('/api/possessions', (req, res) => {
-  res.json(possessions);
+  const patrimoine = data.find(item => item.model === 'Patrimoine');
+  if (patrimoine) {
+    res.json(patrimoine.data.possessions);
+  } else {
+    res.status(404).json({ message: 'Data not found' });
+  }
 });
 
 // Endpoint: Get Possession details
 app.get('/api/possessions/:libelle', (req, res) => {
   const { libelle } = req.params;
-  const possession = possessions.find(p => p.libelle === libelle);
-  if (possession) {
-    res.json(possession);
+  const patrimoine = data.find(item => item.model === 'Patrimoine');
+  if (patrimoine) {
+    const possession = patrimoine.data.possessions.find(p => p.libelle === libelle);
+    if (possession) {
+      res.json(possession);
+    } else {
+      res.status(404).json({ message: 'Possession not found' });
+    }
   } else {
-    res.status(404).json({ message: 'Possession not found' });
+    res.status(404).json({ message: 'Data not found' });
   }
 });
 
-// Endpoint: Create Possession
+// Endpoint: Create a new Possession
 app.post('/api/possessions', (req, res) => {
-  const { libelle, valeur, taux } = req.body;
-  if (!libelle || !valeur || !taux) {
-    return res.status(400).json({ message: 'Missing required fields: libelle, valeur, or taux' });
-  }
-  if (!possessions.find(p => p.libelle === libelle)) {
-    possessions.push({ libelle, valeur, dateDebut: new Date().toISOString(), taux, dateFin: null });
-    res.status(201).json({ message: 'Possession created' });
+  const newPossession = req.body;
+  const patrimoine = data.find(item => item.model === 'Patrimoine');
+  if (patrimoine) {
+    patrimoine.data.possessions.push(newPossession);
+    fs.writeFileSync(path.join(__dirname, 'data', 'data.json'), JSON.stringify(data, null, 2));
+    res.status(201).json(newPossession);
   } else {
-    res.status(400).json({ message: 'Possession already exists' });
+    res.status(404).json({ message: 'Data not found' });
   }
 });
 
-// Endpoint: Update Possession
+// Endpoint: Update an existing Possession
 app.put('/api/possessions/:libelle', (req, res) => {
   const { libelle } = req.params;
   const updatedPossession = req.body;
-  const index = possessions.findIndex(p => p.libelle === libelle);
-
-  if (index !== -1) {
-    possessions[index] = { ...possessions[index], ...updatedPossession };
-    res.status(200).json({ message: 'Possession updated successfully' });
+  const patrimoine = data.find(item => item.model === 'Patrimoine');
+  if (patrimoine) {
+    const index = patrimoine.data.possessions.findIndex(p => p.libelle === libelle);
+    if (index !== -1) {
+      patrimoine.data.possessions[index] = updatedPossession;
+      fs.writeFileSync(path.join(__dirname, 'data', 'data.json'), JSON.stringify(data, null, 2));
+      res.json(updatedPossession);
+    } else {
+      res.status(404).json({ message: 'Possession not found' });
+    }
   } else {
-    res.status(404).json({ message: 'Possession not found' });
+    res.status(404).json({ message: 'Data not found' });
   }
 });
 
-// Endpoint: Close Possession
-app.put('/api/possessions/:libelle/close', (req, res) => {
+// Endpoint: Delete a Possession
+app.delete('/api/possessions/:libelle', (req, res) => {
   const { libelle } = req.params;
-  const possession = possessions.find(p => p.libelle === libelle);
-
-  if (possession) {
-    possession.dateFin = new Date().toISOString();
-    possessions = possessions.filter(p => p.libelle !== libelle); // Supprimer la possession de la liste
-    res.status(200).json({ message: 'Possession closed and removed successfully' });
+  const patrimoine = data.find(item => item.model === 'Patrimoine');
+  if (patrimoine) {
+    const index = patrimoine.data.possessions.findIndex(p => p.libelle === libelle);
+    if (index !== -1) {
+      patrimoine.data.possessions.splice(index, 1);
+      fs.writeFileSync(path.join(__dirname, 'data', 'data.json'), JSON.stringify(data, null, 2));
+      res.status(204).send();
+    } else {
+      res.status(404).json({ message: 'Possession not found' });
+    }
   } else {
-    res.status(404).json({ message: 'Possession not found' });
+    res.status(404).json({ message: 'Data not found' });
   }
 });
 
-// Configuration du port
+// Démarrer le serveur
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Serveur en cours d'exécution sur le port ${PORT}`);
 });

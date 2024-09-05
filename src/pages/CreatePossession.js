@@ -8,6 +8,7 @@ const CreatePossession = () => {
   const [dateDebut, setDateDebut] = useState('');
   const [dateFin, setDateFin] = useState('');
   const [taux, setTaux] = useState('');
+  const [possesseur, setPossesseur] = useState(''); // Nouveau champ pour le possesseur
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -21,10 +22,11 @@ const CreatePossession = () => {
         dateDebut,
         dateFin,
         taux,
+        possesseur, // Ajout du possesseur
       });
 
       if (response.status === 201) {
-        navigate('/possessions'); 
+        navigate('/possessions');
       }
     } catch (error) {
       setError('An error occurred while creating the possession.');
@@ -87,6 +89,17 @@ const CreatePossession = () => {
             id="taux"
             value={taux}
             onChange={(e) => setTaux(e.target.value)}
+          />
+        </div>
+        <div className="form-group"> {/* Nouveau champ pour le possesseur */}
+          <label htmlFor="possesseur">Possesseur</label>
+          <input
+            type="text"
+            className="form-control"
+            id="possesseur"
+            value={possesseur}
+            onChange={(e) => setPossesseur(e.target.value)}
+            required
           />
         </div>
         <button type="submit" className="btn btn-primary mt-3">

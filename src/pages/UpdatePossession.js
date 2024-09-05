@@ -9,16 +9,24 @@ const UpdatePossession = () => {
     valeur: '',
     dateDebut: '',
     dateFin: '',
-    taux: ''
+    taux: '',
+    possesseur: { nom: '' }
   });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Récupérer les détails actuels de la possession
     axios.get(`http://localhost:5000/api/possessions/${libelle}`)
       .then(response => {
-        setPossession(response.data);
+        const data = response.data;
+        setPossession({
+          libelle: data.libelle || '',
+          valeur: data.valeur || '',
+          dateDebut: data.dateDebut ? data.dateDebut.split('T')[0] : '',
+          dateFin: data.dateFin ? data.dateFin.split('T')[0] : '',
+          taux: data.taux || '',
+          possesseur: data.possesseur || { nom: '' }
+        });
       })
       .catch(error => {
         setError('Erreur lors de la récupération des détails de la possession.');
@@ -27,19 +35,25 @@ const UpdatePossession = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setPossession(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+    if (name === "nom") {
+      setPossession(prevState => ({
+        ...prevState,
+        possesseur: { ...prevState.possesseur, nom: value }
+      }));
+    } else {
+      setPossession(prevState => ({
+        ...prevState,
+        [name]: value
+      }));
+    }
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault(); 
-
+    e.preventDefault();
     axios.put(`http://localhost:5000/api/possessions/${libelle}`, possession)
       .then(response => {
         alert('Possession mise à jour avec succès');
-        navigate('/possessions'); // Redirection vers la liste des possessions après la mise à jour
+        navigate('/possessions');
       })
       .catch(error => {
         setError('Erreur lors de la mise à jour de la possession.');
@@ -68,7 +82,7 @@ const UpdatePossession = () => {
             type="number"
             className="form-control"
             name="valeur"
-            value={possession.valeur}
+            value={possession.valeur || ''}
             onChange={handleChange}
             required
           />
@@ -79,7 +93,7 @@ const UpdatePossession = () => {
             type="date"
             className="form-control"
             name="dateDebut"
-            value={possession.dateDebut}
+            value={possession.dateDebut || ''}
             onChange={handleChange}
             required
           />
@@ -100,7 +114,18 @@ const UpdatePossession = () => {
             type="number"
             className="form-control"
             name="taux"
-            value={possession.taux}
+            value={possession.taux || ''}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Nom du Possesseur</label>
+          <input
+            type="text"
+            className="form-control"
+            name="nom"
+            value={possession.possesseur.nom || ''}
             onChange={handleChange}
             required
           />
