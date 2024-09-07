@@ -5,8 +5,8 @@ import CreatePossession from './pages/CreatePossession';
 import ListPossession from './pages/ListPossession';
 import UpdatePossession from './pages/UpdatePossession';
 import Patrimoine from './pages/Patrimoine';
-import PossessionsTable from './models/Possession'; // Assurez-vous que le chemin est correct
-import Home from './pages/home'; // Assurez-vous que le nom du fichier est correct
+import PossessionsTable from './models/Possession'; 
+import Home from './pages/home'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
