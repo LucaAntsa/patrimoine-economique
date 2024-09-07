@@ -42,7 +42,9 @@ let data = readDataFile();
 app.get('/api/possessions', (req, res) => {
   const patrimoine = data.find(item => item.model === 'Patrimoine');
   if (patrimoine) {
-    res.json(patrimoine.data.possessions);
+    // Filtrer uniquement les possessions non clôturées
+    const openPossessions = patrimoine.data.possessions.filter(possession => possession.status !== 'closed');
+    res.json(openPossessions);
   } else {
     res.status(404).json({ message: 'Data not found' });
   }
@@ -96,6 +98,26 @@ app.put('/api/possessions/:libelle', (req, res) => {
   }
 });
 
+// Endpoint: Close a Possession
+app.put('/api/possessions/:libelle/close', (req, res) => {
+  const { libelle } = req.params;
+  const patrimoine = data.find(item => item.model === 'Patrimoine');
+  if (patrimoine) {
+    const possession = patrimoine.data.possessions.find(p => p.libelle === libelle);
+    if (possession) {
+      // Mettre à jour le statut et la date de fin
+      possession.status = 'closed';
+      possession.dateFin = new Date(); 
+      fs.writeFileSync(path.join(__dirname, 'data', 'data.json'), JSON.stringify(data, null, 2));
+      res.json(possession);
+    } else {
+      res.status(404).json({ message: 'Possession not found' });
+    }
+  } else {
+    res.status(404).json({ message: 'Data not found' });
+  }
+});
+
 // Endpoint: Delete a Possession
 app.delete('/api/possessions/:libelle', (req, res) => {
   const { libelle } = req.params;
@@ -105,7 +127,7 @@ app.delete('/api/possessions/:libelle', (req, res) => {
     if (index !== -1) {
       patrimoine.data.possessions.splice(index, 1);
       fs.writeFileSync(path.join(__dirname, 'data', 'data.json'), JSON.stringify(data, null, 2));
-      res.status(204).send();
+      res.status(204).send(); 
     } else {
       res.status(404).json({ message: 'Possession not found' });
     }
@@ -114,8 +136,9 @@ app.delete('/api/possessions/:libelle', (req, res) => {
   }
 });
 
+
 // Démarrer le serveur
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 app.listen(PORT, () => {
-  console.log(`Serveur en cours d'exécution sur le port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

@@ -29,15 +29,20 @@ const Patrimoine = () => {
   });
 
   useEffect(() => {
-    axios.get(`${API_URL}/api/possessions`)
-      .then(response => {
+    const fetchPossessions = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/possessions`);
         const data = response.data;
         setPossessions(data);
         generateGraphData(data, new Date(0), new Date());
         setFilteredPossessions(data);
-      })
-      .catch(error => console.error('Erreur de récupération des possessions:', error));
-  }, []);
+      } catch (error) {
+        console.error('Erreur de récupération des possessions:', error);
+      }
+    };
+
+    fetchPossessions();
+  }, []); // Tableau des dépendances vide
 
   const generateGraphData = (data, start, end) => {
     const labels = [];

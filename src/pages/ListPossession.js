@@ -21,10 +21,20 @@ const ListPossession = () => {
 
   const handleClose = async (libelle) => {
     try {
-      await axios.put(`http://localhost:5000/api/possessions/${libelle}/close`);
+     
+      const encodedLibelle = encodeURIComponent(libelle); 
+      
+      // Appel API pour supprimer la possession
+      await axios.delete(`http://localhost:5000/api/possessions/${encodedLibelle}`);
+      
+      // Met à jour l'état pour retirer la possession clôturée de la liste
       setPossessions(prevPossessions => prevPossessions.filter(p => p.libelle !== libelle));
     } catch (error) {
-      setError('Une erreur est survenue lors de la clôture de la possession.');
+      if (error.response && error.response.status === 404) {
+        setError(`La possession "${libelle}" n'a pas été trouvée.`);
+      } else {
+        setError('Une erreur est survenue lors de la clôture de la possession.');
+      }
     }
   };
 
@@ -65,7 +75,7 @@ const ListPossession = () => {
                 <button
                   className="btn btn-danger ms-2"
                   onClick={() => handleClose(possession.libelle)}
-                  disabled={possession.dateFin}
+                  disabled={possession.dateFin} 
                 >
                   Clôturer
                 </button>
