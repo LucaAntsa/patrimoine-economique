@@ -17,7 +17,7 @@
           "valeur": 4300000,
           "dateDebut": "2023-12-25",
           "dateFin": "",
-          "taux": "5",
+          "taux": "10",
           "possesseur": {
             "nom": "John Doe"
           }
@@ -27,7 +27,7 @@
           "valeur": 500000,
           "dateDebut": "2019-01-06",
           "dateFin": "",
-          "taux": "5",
+          "taux": "10",
           "possesseur": {
             "nom": "John Doe"
           }
@@ -37,9 +37,57 @@
           "valeur": 2000000,
           "dateDebut": "2020-01-01",
           "dateFin": "",
+          "taux": "5",
+          "possesseur": {
+            "nom": "John Doe"
+          }
+        },
+        {
+          "libelle": "Alternance",
+          "valeur": 600000,
+          "dateDebut": "2023-02-13",
+          "dateFin": "",
+          "taux": "-10",
+          "possesseur": {
+            "nom": "John Doe"
+          }
+        },
+        {
+          "libelle": "Survie",
+          "valeur": 300000,
+          "dateDebut": "2023-02-13",
+          "dateFin": "",
+          "taux": "5",
+          "possesseur": {
+            "nom": "John Doe"
+          }
+        },
+        {
+          "libelle": "Redmi Note 9",
+          "valeur": 800000,
+          "dateDebut": "2022-12-29",
+          "dateFin": "",
           "taux": "10",
           "possesseur": {
             "nom": "John Doe"
+          }
+        },
+        {
+          "libelle": "Samsung Galaxy S23",
+          "valeur": "1600000",
+          "dateDebut": "2024-09-07",
+          "dateFin": "",
+          "taux": "5",
+          "possesseur": {
+            "0": "J",
+            "1": "o",
+            "2": "h",
+            "3": "n",
+            "4": " ",
+            "5": "D",
+            "6": "o",
+            "7": "e",
+            "nom": "john Doe"
           }
         }
       ]
