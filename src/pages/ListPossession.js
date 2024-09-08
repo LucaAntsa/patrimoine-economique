@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { API_URL } from '../config';
 
 const ListPossession = () => {
   const [possessions, setPossessions] = useState([]);
@@ -9,7 +10,8 @@ const ListPossession = () => {
   useEffect(() => {
     const fetchPossessions = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/possessions');
+        
+        const response = await axios.get(`${API_URL}/api/possessions`);
         setPossessions(response.data);
       } catch (error) {
         setError('Une erreur est survenue lors de la récupération des possessions.');
@@ -21,14 +23,13 @@ const ListPossession = () => {
 
   const handleClose = async (libelle) => {
     try {
-     
-      const encodedLibelle = encodeURIComponent(libelle); 
-      
-      // Appel API pour supprimer la possession
-      await axios.delete(`http://localhost:5000/api/possessions/${encodedLibelle}`);
-      
-      // Met à jour l'état pour retirer la possession clôturée de la liste
-      setPossessions(prevPossessions => prevPossessions.filter(p => p.libelle !== libelle));
+      const encodedLibelle = encodeURIComponent(libelle);
+      // Appel API pour supprimer la possession avec l'URL du backend
+      await axios.delete(`${API_URL}/api/possessions/${encodedLibelle}`);
+
+      setPossessions((prevPossessions) =>
+        prevPossessions.filter((p) => p.libelle !== libelle)
+      );
     } catch (error) {
       if (error.response && error.response.status === 404) {
         setError(`La possession "${libelle}" n'a pas été trouvée.`);
@@ -42,7 +43,9 @@ const ListPossession = () => {
     <div>
       <h1>Liste des Possessions</h1>
       {error && <div className="alert alert-danger">{error}</div>}
-      <Link className="btn btn-primary" to="/possession/create">Créer une nouvelle possession</Link>
+      <Link className="btn btn-primary" to="/possession/create">
+        Créer une nouvelle possession
+      </Link>
       <table className="table mt-3">
         <thead>
           <tr>
@@ -62,7 +65,11 @@ const ListPossession = () => {
               <td>{possession.libelle}</td>
               <td>{possession.valeur || 'Non défini'}</td>
               <td>{new Date(possession.dateDebut).toLocaleDateString()}</td>
-              <td>{possession.dateFin ? new Date(possession.dateFin).toLocaleDateString() : 'En cours'}</td>
+              <td>
+                {possession.dateFin
+                  ? new Date(possession.dateFin).toLocaleDateString()
+                  : 'En cours'}
+              </td>
               <td>{possession.taux ? possession.taux + '%' : 'Non défini'}</td>
               <td>
                 {possession.valeur && possession.taux
@@ -71,11 +78,13 @@ const ListPossession = () => {
               </td>
               <td>{possession.possesseur ? possession.possesseur.nom : 'Non défini'}</td>
               <td>
-                <Link className="btn btn-warning" to={`/possession/${possession.libelle}/update`}>Éditer</Link>
+                <Link className="btn btn-warning" to={`/possession/${possession.libelle}/update`}>
+                  Éditer
+                </Link>
                 <button
                   className="btn btn-danger ms-2"
                   onClick={() => handleClose(possession.libelle)}
-                  disabled={possession.dateFin} 
+                  disabled={possession.dateFin}
                 >
                   Clôturer
                 </button>

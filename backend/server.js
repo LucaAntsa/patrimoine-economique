@@ -7,7 +7,9 @@ import fs from 'fs';
 const app = express();
 
 // Configurer CORS pour autoriser plusieurs origines
-const allowedOrigins = ['http://localhost:3000', 'http://192.168.221.1:3000'];
+const allowedOrigins = [  'http://localhost:3000',
+  'http://192.168.221.1:3000',
+  'https://patrimoine-frontend-fg0i.onrender.com'];
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
