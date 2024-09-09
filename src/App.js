@@ -5,7 +5,7 @@ import CreatePossession from './pages/CreatePossession';
 import ListPossession from './pages/ListPossession';
 import UpdatePossession from './pages/UpdatePossession';
 import Patrimoine from './pages/Patrimoine';
-import PossessionsTable from './models/Possession'; 
+import PossessionsTable from './models/Possession'; // Assurez-vous que le fichier et l'exportation sont corrects
 import Home from './pages/home'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -14,14 +14,14 @@ function App() {
     <Router>
       <Header />
       <div className="container mt-4">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/patrimoine" element={<Patrimoine />} />
-          <Route path="/possession" element={<ListPossession />} />
-          <Route path="/possession/create" element={<CreatePossession />} />
-          <Route path="/possession/:libelle/update" element={<UpdatePossession />} />
-          <Route path="/patrimoine/possessions-table" element={<PossessionsTable />} />
-        </Routes>
+      <Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/patrimoine" element={<Patrimoine />} />
+  <Route path="/possession" element={<ListPossession />} />
+  <Route path="/possession/create" element={<CreatePossession />} />
+  <Route path="/possession/:libelle/update" element={<UpdatePossession />} />
+  <Route path="/patrimoine/possessions-table" element={<PossessionsTable />} />
+      </Routes>
       </div>
     </Router>
   );

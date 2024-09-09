@@ -1,3 +1,4 @@
+// src/pages/ListPossession.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -7,26 +8,23 @@ const ListPossession = () => {
   const [possessions, setPossessions] = useState([]);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchPossessions = async () => {
-      try {
-        
-        const response = await axios.get(`${API_URL}/api/possessions`);
-        setPossessions(response.data);
-      } catch (error) {
-        setError('Une erreur est survenue lors de la récupération des possessions.');
-      }
-    };
+  const fetchPossessions = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/possessions`);
+      setPossessions(response.data);
+    } catch (error) {
+      setError('Une erreur est survenue lors de la récupération des possessions.');
+    }
+  };
 
+  useEffect(() => {
     fetchPossessions();
   }, []);
 
   const handleClose = async (libelle) => {
     try {
       const encodedLibelle = encodeURIComponent(libelle);
-      // Appel API pour supprimer la possession avec l'URL du backend
       await axios.delete(`${API_URL}/api/possessions/${encodedLibelle}`);
-
       setPossessions((prevPossessions) =>
         prevPossessions.filter((p) => p.libelle !== libelle)
       );
@@ -70,7 +68,7 @@ const ListPossession = () => {
                   ? new Date(possession.dateFin).toLocaleDateString()
                   : 'En cours'}
               </td>
-              <td>{possession.taux ? possession.taux + '%' : 'Non défini'}</td>
+              <td>{possession.taux ? `${possession.taux}%` : 'Non défini'}</td>
               <td>
                 {possession.valeur && possession.taux
                   ? (possession.valeur * (1 + possession.taux / 100)).toFixed(2)

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +9,7 @@ const CreatePossession = () => {
   const [dateDebut, setDateDebut] = useState('');
   const [dateFin, setDateFin] = useState('');
   const [taux, setTaux] = useState('');
-  const [possesseur, setPossesseur] = useState(''); 
+  const [possesseur, setPossesseur] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -22,24 +23,24 @@ const CreatePossession = () => {
         dateDebut,
         dateFin,
         taux,
-        possesseur, 
+        possesseur,
       });
 
       if (response.status === 201) {
-        navigate('/possessions');
+        navigate('/possession', { state: { refresh: true } });
       }
     } catch (error) {
-      setError('An error occurred while creating the possession.');
+      setError('Une erreur est survenue lors de la création de la possession.');
     }
   };
 
   return (
     <div className="container mt-5">
-      <h2>Create a New Possession</h2>
+      <h2>Créer une Nouvelle Possession</h2>
       {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="libelle">Libelle</label>
+        <div className="mb-3">
+          <label htmlFor="libelle" className="form-label">Libelle</label>
           <input
             type="text"
             className="form-control"
@@ -49,8 +50,8 @@ const CreatePossession = () => {
             required
           />
         </div>
-        <div className="form-group">
-          <label htmlFor="valeur">Valeur</label>
+        <div className="mb-3">
+          <label htmlFor="valeur" className="form-label">Valeur</label>
           <input
             type="number"
             className="form-control"
@@ -60,8 +61,8 @@ const CreatePossession = () => {
             required
           />
         </div>
-        <div className="form-group">
-          <label htmlFor="dateDebut">Date Début</label>
+        <div className="mb-3">
+          <label htmlFor="dateDebut" className="form-label">Date de Début</label>
           <input
             type="date"
             className="form-control"
@@ -71,8 +72,8 @@ const CreatePossession = () => {
             required
           />
         </div>
-        <div className="form-group">
-          <label htmlFor="dateFin">Date Fin</label>
+        <div className="mb-3">
+          <label htmlFor="dateFin" className="form-label">Date de Fin</label>
           <input
             type="date"
             className="form-control"
@@ -81,8 +82,8 @@ const CreatePossession = () => {
             onChange={(e) => setDateFin(e.target.value)}
           />
         </div>
-        <div className="form-group">
-          <label htmlFor="taux">Taux d'Amortissement (%)</label>
+        <div className="mb-3">
+          <label htmlFor="taux" className="form-label">Taux (%)</label>
           <input
             type="number"
             className="form-control"
@@ -91,20 +92,17 @@ const CreatePossession = () => {
             onChange={(e) => setTaux(e.target.value)}
           />
         </div>
-        <div className="form-group"> {/* Nouveau champ pour le possesseur */}
-          <label htmlFor="possesseur">Possesseur</label>
+        <div className="mb-3">
+          <label htmlFor="possesseur" className="form-label">Possesseur</label>
           <input
             type="text"
             className="form-control"
             id="possesseur"
             value={possesseur}
             onChange={(e) => setPossesseur(e.target.value)}
-            required
           />
         </div>
-        <button type="submit" className="btn btn-primary mt-3">
-          Create
-        </button>
+        <button type="submit" className="btn btn-primary">Créer</button>
       </form>
     </div>
   );
